@@ -8,8 +8,6 @@ import com.raizlabs.android.dbflow.rx2.language.RXSQLite
 import com.raizlabs.android.dbflow.sql.language.OrderBy
 import io.reactivex.Maybe
 import io.reactivex.Single
-import xyz.eraise.simpleaccountbook.livedata.DefaultPaymentLiveData
-import xyz.eraise.simpleaccountbook.pojo.AccountBook
 import xyz.eraise.simpleaccountbook.pojo.Payment
 import xyz.eraise.simpleaccountbook.pojo.Payment_Table
 
@@ -33,7 +31,6 @@ object PaymentRepository {
                         }
                     }
                     .flatMapSingle { payment.save() }
-                    .doOnSuccess { if (it) DefaultPaymentLiveData.getInstance().postValue(payment) }
         } else {
             payment.save()
         }

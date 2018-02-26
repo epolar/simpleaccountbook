@@ -5,6 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <Button
+        android:id="@+id/btn_payment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_item_margin"
+        android:layout_marginStart="@dimen/default_horizontal_margin"
+        android:layout_marginEnd="@dimen/default_horizontal_margin"
+        android:ems="6"
+        android:text="@string/add_tally_payment"
+        android:backgroundTint="#FFF"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/et_money"
+        />
+
     <EditText
         android:id="@+id/et_money"
         android:layout_width="0dp"
@@ -17,8 +31,22 @@
         android:hint="@string/add_tally_money"
         android:inputType="number"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/btn_payment"
         app:layout_constraintRight_toRightOf="parent"
+        />
+
+    <Button
+        android:id="@+id/btn_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_item_margin"
+        android:layout_marginStart="@dimen/default_horizontal_margin"
+        android:layout_marginEnd="@dimen/default_horizontal_margin"
+        android:ems="6"
+        android:text="@string/add_tally_category"
+        android:backgroundTint="#FFF"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/et_project"
         />
 
     <EditText
@@ -32,21 +60,7 @@
         android:layout_marginEnd="@dimen/default_horizontal_margin"
         android:hint="@string/add_tally_project"
         app:layout_constraintTop_toBottomOf="@id/et_money"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        />
-
-    <Button
-        android:id="@+id/btn_payment"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_item_margin"
-        android:layout_marginStart="@dimen/default_horizontal_margin"
-        android:layout_marginEnd="@dimen/default_horizontal_margin"
-        android:text="@string/add_tally_payment"
-        android:backgroundTint="#FFF"
-        app:layout_constraintTop_toBottomOf="@id/et_project"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/btn_category"
         app:layout_constraintRight_toRightOf="parent"
         />
 
@@ -59,21 +73,7 @@
         android:layout_marginEnd="@dimen/default_horizontal_margin"
         android:text="@string/add_tally_account_book"
         android:backgroundTint="#FFF"
-        app:layout_constraintTop_toBottomOf="@id/btn_payment"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        />
-
-    <Button
-        android:id="@+id/btn_category"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_item_margin"
-        android:layout_marginStart="@dimen/default_horizontal_margin"
-        android:layout_marginEnd="@dimen/default_horizontal_margin"
-        android:text="@string/add_tally_category"
-        android:backgroundTint="#FFF"
-        app:layout_constraintTop_toBottomOf="@id/btn_account_book"
+        app:layout_constraintTop_toBottomOf="@id/et_project"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         />
@@ -87,7 +87,7 @@
         android:layout_marginEnd="@dimen/default_horizontal_margin"
         android:text="@string/add_tally_date"
         android:backgroundTint="#FFF"
-        app:layout_constraintTop_toBottomOf="@id/btn_category"
+        app:layout_constraintTop_toBottomOf="@id/btn_account_book"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         />

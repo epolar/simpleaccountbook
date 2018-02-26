@@ -18,7 +18,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.tally.add.AddTallyActivity"/>
+        <activity android:name=".ui.tally.add.AddTallyActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
         <activity android:name=".ui.tally.list.TallyListActivity"/>
 
         <activity android:name=".ui.payment.add.AddPaymentActivity"/>
