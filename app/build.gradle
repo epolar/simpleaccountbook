@@ -25,6 +25,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            resValue("string", "PORT_NUMBER", "8013") // 切换端口
+            resValue("string", "DB_PASSWORD_APPDATABASE", "SimpleAccountBook") // SQLCipher密码
+        }
     }
 }
 
@@ -66,4 +70,7 @@ dependencies {
     implementation "com.github.Raizlabs.DBFlow:dbflow-rx2-kotlinextensions:${dbflow_version}"
     // BaseRecyclerViewAdapterHelper
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.35'
+
+    // debug databases
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.3'
 }
