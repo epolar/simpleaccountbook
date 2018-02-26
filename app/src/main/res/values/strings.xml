@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">SimpleAccountBook</string>
+    <string name="alipay">支付宝</string>
+    <string name="wechat">微信</string>
+    <string name="cash">现金</string>
+    <string name="daily">日常</string>
+    <string name="food">餐饮</string>
+    <string name="traffic">交通</string>
+    <string name="living">居家</string>
+    <string name="digital">3C</string>
+    <string name="market">超市</string>
+
+    <string name="add_tally_money">金额</string>
+    <string name="add_tally_account_book">账本</string>
+    <string name="add_tally_payment">支付方式</string>
+    <string name="add_tally_category">分类</string>
+    <string name="add_tally_project">项目</string>
+    <string name="add_tally_date">日期</string>
+    <string name="add_tally_btn_save">保存</string>
+    <string name="add_tally_btn_list">记录</string>
+    <string name="add_tally_money_should_not_be_empty">请输入金额</string>
+    <string name="add_tally_payment_should_selected">请选择支付方式</string>
+    <string name="add_tally_account_book_should_selected">请选择账本</string>
+    <string name="add_tally_category_should_selected">请选择分类</string>
+    <string name="add_payment_name">支付方式名称</string>
+    <string name="add_payment_save">添加</string>
+    <string name="add_payment_name_should_not_be_empty">支付方式名称不得为空</string>
+    <string name="add_account_book_name">账本名称</string>
+    <string name="add_account_book_save">添加</string>
+    <string name="add_account_book_name_should_not_be_empty">账本名称不得为空</string>
+    <string name="add_category_name">分类名称</string>
+    <string name="add_category_save">添加</string>
+    <string name="add_category_name_should_not_be_empty">分类名称不得为空</string>
+    <string name="account_book_list_add">添加账本</string>
+    <string name="payment_list_add">添加支付方式</string>
+    <string name="category_list_add">添加类别</string>
+</resources>
