@@ -15,7 +15,7 @@
     <string name="add_tally_payment">支付方式</string>
     <string name="add_tally_category">分类</string>
     <string name="add_tally_project">项目</string>
-    <string name="add_tally_date">日期</string>
+    <string name="add_tally_today">今天</string>
     <string name="add_tally_btn_save">保存</string>
     <string name="add_tally_btn_list">记录</string>
     <string name="add_tally_money_should_not_be_empty">请输入金额</string>

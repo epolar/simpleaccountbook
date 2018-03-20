@@ -19,7 +19,7 @@
         </activity>
 
         <activity android:name=".ui.tally.add.AddTallyActivity"
-            android:windowSoftInputMode="stateVisible|adjustResize"/>
+                  android:windowSoftInputMode="stateHidden|adjustNothing"/>
         <activity android:name=".ui.tally.list.TallyListActivity"/>
 
         <activity android:name=".ui.payment.add.AddPaymentActivity"/>

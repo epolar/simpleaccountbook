@@ -2,35 +2,89 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/btn_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_horizontal_margin"
+        android:layout_marginEnd="@dimen/default_horizontal_margin"
+        android:minHeight="0dp"
+        android:text="@string/add_tally_today"
+        android:backgroundTint="#FFF"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        />
+
+    <Button
+        android:id="@+id/btn_list"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/add_tally_btn_list"
+        android:layout_marginEnd="@dimen/default_item_margin"
+        android:layout_marginBottom="20dp"
+        android:minHeight="0dp"
+        android:backgroundTint="#FFF"
+        app:layout_constraintRight_toRightOf="parent"
+        />
+    
+    <View
+        android:id="@+id/divider_top"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/divider_height"
+        android:background="@color/dividerColor"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_date"
+        />
 
     <Button
         android:id="@+id/btn_payment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_item_margin"
+        android:layout_marginTop="20dp"
         android:layout_marginStart="@dimen/default_horizontal_margin"
         android:layout_marginEnd="@dimen/default_horizontal_margin"
         android:ems="6"
         android:text="@string/add_tally_payment"
         android:backgroundTint="#FFF"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/et_money"
+        app:layout_constraintTop_toBottomOf="@id/divider_top"
         />
 
-    <EditText
-        android:id="@+id/et_money"
+    <TextView
+        android:id="@+id/tv_equation"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:lines="1"
-        android:layout_marginTop="20dp"
+        android:layout_height="20dp"
         android:layout_marginStart="@dimen/default_horizontal_margin"
         android:layout_marginEnd="@dimen/default_horizontal_margin"
-        android:hint="@string/add_tally_money"
-        android:inputType="number"
-        app:layout_constraintTop_toTopOf="parent"
+        android:ellipsize="start"
+        android:textColor="@color/gold"
+        android:visibility="gone"
+        app:layout_constraintLeft_toRightOf="@id/btn_payment"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btn_payment"
+        tools:text="20+30"
+        />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/et_money"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/default_horizontal_margin"
+        android:layout_marginEnd="@dimen/default_horizontal_margin"
+        android:gravity="center_vertical"
+        android:textColor="@color/gold"
+        android:textColorHint="@color/gold"
+        android:hint="0"
+        android:autoSizeTextType="uniform"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintTop_toBottomOf="@id/tv_equation"
+        app:layout_constraintBottom_toBottomOf="@id/btn_payment"
         app:layout_constraintLeft_toRightOf="@id/btn_payment"
         app:layout_constraintRight_toRightOf="parent"
         />
@@ -45,6 +99,8 @@
         android:ems="6"
         android:text="@string/add_tally_category"
         android:backgroundTint="#FFF"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="@+id/et_project"
         />
@@ -78,40 +134,11 @@
         app:layout_constraintRight_toRightOf="parent"
         />
 
-    <Button
-        android:id="@+id/btn_date"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_input_plate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_item_margin"
-        android:layout_marginStart="@dimen/default_horizontal_margin"
-        android:layout_marginEnd="@dimen/default_horizontal_margin"
-        android:text="@string/add_tally_date"
-        android:backgroundTint="#FFF"
-        app:layout_constraintTop_toBottomOf="@id/btn_account_book"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        />
-
-    <Button
-        android:id="@+id/btn_list"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/add_tally_btn_list"
-        android:layout_marginStart="@dimen/default_item_margin"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/btn_save"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
-
-    <Button
-        android:id="@+id/btn_save"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/default_horizontal_margin"
-        android:layout_marginBottom="20dp"
-        android:text="@string/add_tally_btn_save"
-        app:layout_constraintLeft_toRightOf="@id/btn_list"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         />

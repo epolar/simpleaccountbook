@@ -1,6 +1,5 @@
 package xyz.eraise.simpleaccountbook.ui.tally.list
 
-import android.view.View
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import xyz.eraise.simpleaccountbook.R
@@ -12,10 +11,9 @@ import java.text.MessageFormat
  * Created by eraise on 2018/2/24.
  */
 class TallyAdapter
-    : BaseQuickAdapter<Tally,
-        TallyAdapter.TallyViewHolder>(R.layout.item_tally) {
+    : BaseQuickAdapter<Tally, BaseViewHolder>(R.layout.item_tally) {
 
-    override fun convert(helper: TallyViewHolder?, item: Tally?) {
+    override fun convert(helper: BaseViewHolder?, item: Tally?) {
         helper?.setText(R.id.tv_payment, item?.payment?.name)
         helper?.setText(R.id.tv_money,
                 item?.money?.toDouble()?.div(100).toString())
@@ -29,6 +27,4 @@ class TallyAdapter
         }
         helper?.setText(R.id.tv_date, DateUtils.timestampToDateStr(item?.payTime!!))
     }
-
-    inner class TallyViewHolder(itemView : View) : BaseViewHolder(itemView)
 }
