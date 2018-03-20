@@ -354,14 +354,15 @@ class AddTallyFragment : Fragment() {
     }
 
     private fun save() {
-        if (et_money.text.isEmpty()) {
+        if (tv_equation.text.isEmpty()) {
             PromptUtils.toast(R.string.add_tally_money_should_not_be_empty)
             return
         }
-        // 元为单位
-        val moneyStr = et_money.text.toString()
+
         // 四舍五入后转到分为单位
-        val money = (moneyStr.toDouble() * 100).roundToInt()
+        val money = mAmount.multiply(BigDecimal.valueOf(100))
+                .toDouble()
+                .roundToInt()
 
         if (mPayment == null) {
             PromptUtils.toast(R.string.add_tally_payment_should_selected)
@@ -384,7 +385,18 @@ class AddTallyFragment : Fragment() {
                 payTime = mDate.timeInMillis)
         TallyRepository
                 .saveTally(tally)
-                .subscribe(Consumer { PromptUtils.toast("保存成功") })
+                .subscribe(Consumer { onSaveSuccess() })
+    }
+
+    private fun onSaveSuccess() {
+        PromptUtils.toast(R.string.add_tally_save_success)
+        mAmount = BigDecimal.ZERO
+        tv_equation.requestFocus()
+        tv_equation.text = ""
+        et_money.text = ""
+        et_project.text.clear()
+        mNumbers.clear()
+        mOperations.clear()
     }
 
 }
