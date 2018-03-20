@@ -1,0 +1,6 @@
+
+ext {
+    dbflow_version = "4.2.4"
+    sqlcipher_version = "3.5.9"
+    support_version = "27.1.0"
+}
