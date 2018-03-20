@@ -78,6 +78,8 @@
         android:layout_marginStart="@dimen/default_horizontal_margin"
         android:layout_marginEnd="@dimen/default_horizontal_margin"
         android:gravity="center_vertical"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:textColor="@color/gold"
         android:textColorHint="@color/gold"
         android:hint="0"
@@ -99,8 +101,6 @@
         android:ems="6"
         android:text="@string/add_tally_category"
         android:backgroundTint="#FFF"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="@+id/et_project"
         />
