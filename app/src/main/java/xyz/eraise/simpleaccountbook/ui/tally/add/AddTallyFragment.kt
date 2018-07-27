@@ -177,7 +177,7 @@ class AddTallyFragment : Fragment() {
      */
     private fun onClickInput(position: Int) {
         when (position) {
-            0, 1, 2, 4, 5, 6, 9, 10, 13 ->
+            0, 1, 2, 4, 5, 6, 8, 9, 10, 13 ->
                 onInputNumber(mInputPlateAdapter.getItem(position)!!)
             14 -> onInputDot()
             3 -> onInputBack()
