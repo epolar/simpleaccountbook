@@ -2,7 +2,8 @@ package xyz.eraise.simpleaccountbook.pojo
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.raizlabs.android.dbflow.annotation.*
+import com.dbflow5.annotation.Column
+import com.dbflow5.annotation.Table
 import xyz.eraise.simpleaccountbook.repository.databases.AppDatabase
 
 /**

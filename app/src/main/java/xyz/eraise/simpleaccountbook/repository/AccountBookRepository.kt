@@ -1,61 +1,56 @@
 package xyz.eraise.simpleaccountbook.repository
 
-import com.raizlabs.android.dbflow.kotlinextensions.from
-import com.raizlabs.android.dbflow.kotlinextensions.orderBy
-import com.raizlabs.android.dbflow.kotlinextensions.select
-import com.raizlabs.android.dbflow.kotlinextensions.where
-import com.raizlabs.android.dbflow.rx2.language.RXSQLite
-import com.raizlabs.android.dbflow.sql.language.OrderBy
-import io.reactivex.Maybe
-import io.reactivex.Single
+import com.dbflow5.coroutines.defer
+import com.dbflow5.query.OrderBy
+import com.dbflow5.query.select
+import kotlinx.coroutines.Deferred
 import xyz.eraise.simpleaccountbook.pojo.AccountBook
 import xyz.eraise.simpleaccountbook.pojo.AccountBook_Table
 
 /**
  * Created by eraise on 2018/1/23.
  */
-object AccountBookRepository {
+object AccountBookRepository : DBProviderImpl() {
 
     private val emptyAccountBook = AccountBook()
 
-    fun saveAccountBook(accountBook: AccountBook): Single<Boolean> {
-        return if (accountBook.isDefault) {
-            getDefaultAccountBook()
-                    .switchIfEmpty( Maybe.just(emptyAccountBook) )
-                    .flatMap {
-                        if (it != emptyAccountBook) {
-                            it.isDefault = false
-                            it.save().toMaybe()
-                        } else {
-                            Maybe.just(false)
-                        }
-                    }
-                    .flatMapSingle { accountBook.save() }
-        } else {
-            accountBook.save()
+    suspend fun saveAccountBook(accountBook: AccountBook): Deferred<Boolean> {
+        var ab = accountBook
+        if (accountBook.isDefault) {
+            ab = getDefaultAccountBookAsync().await() ?: emptyAccountBook
+            if (ab != emptyAccountBook) {
+                ab.isDefault = false
+            }
         }
+        return database.beginTransactionAsync {
+            ab.save(it)
+        }.defer()
     }
 
-    fun getAccountBooks(): Single<List<AccountBook>> {
-        return RXSQLite.rx(
-                select from AccountBook::class
-                        where (AccountBook_Table.is_delete.`is`(false))
-        ).queryList()
+    fun getAccountBooks(): Deferred<List<AccountBook>> {
+        return (select from AccountBook::class where (AccountBook_Table.is_delete.`is`(false))).async(
+            database
+        ) { d ->
+            queryList(
+                d
+            )
+        }.defer()
     }
 
-    fun getAccountBookCount(): Single<Long> {
-        return RXSQLite.rx(
-                select from AccountBook::class
-                        where (AccountBook_Table.is_delete.`is`(false))
-        ).longValue()
+    fun getAccountBookCount(): Deferred<Long> {
+        return (select from AccountBook::class
+                where (AccountBook_Table.is_delete.`is`(false))
+                ).async(database) { d -> longValue(d) }.defer()
+
     }
 
-    fun getDefaultAccountBook(): Maybe<AccountBook> {
-        return RXSQLite.rx(
-                select from AccountBook::class
-                        where (AccountBook_Table.is_delete.`is`(false))
-                        orderBy OrderBy.fromProperty(AccountBook_Table.is_default).descending()
-                        orderBy OrderBy.fromProperty(AccountBook_Table.last_modify_time).descending()
-        ).querySingle()
+    fun getDefaultAccountBookAsync(): Deferred<AccountBook?> {
+        return (select from AccountBook::class
+                where (AccountBook_Table.is_delete.`is`(false))
+                orderBy OrderBy.fromProperty(AccountBook_Table.is_default).descending()
+                orderBy OrderBy.fromProperty(AccountBook_Table.last_modify_time).descending())
+            .async(database) { d -> querySingle(d) }
+            .defer()
     }
+
 }

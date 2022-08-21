@@ -1,23 +1,22 @@
 package xyz.eraise.simpleaccountbook.ui.payment.list
 
 import android.app.Activity.RESULT_OK
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.DividerItemDecoration
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.chad.library.adapter.base.BaseQuickAdapter
-import io.reactivex.functions.Consumer
-import kotlinx.android.synthetic.main.fragment_list_payment.*
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
+import kotlinx.coroutines.launch
 import xyz.eraise.simpleaccountbook.R
+import xyz.eraise.simpleaccountbook.databinding.FragmentListPaymentBinding
 import xyz.eraise.simpleaccountbook.pojo.Payment
 import xyz.eraise.simpleaccountbook.repository.PaymentRepository
 import xyz.eraise.simpleaccountbook.ui.payment.add.AddPaymentActivity
 import xyz.eraise.simpleaccountbook.utils.Constants.Companion.EXTRA_DATA
-import xyz.eraise.simpleaccountbook.utils.kotlin.async
 
 /**
  * Created by eraise on 2018/2/24.
@@ -29,22 +28,35 @@ class PaymentListFragment : Fragment() {
     }
 
     private val mAdapter = PaymentAdapter()
+    private var _binding: FragmentListPaymentBinding? = null
+    private val binding get() = _binding!!
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?)
-            : View? =
-            inflater.inflate(R.layout.fragment_list_payment,
-                    container,
-                    false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentListPaymentBinding.inflate(
+            inflater,
+            container,
+            false
+        )
+        return binding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        btn_add.setOnClickListener {
+        binding.btnAdd.setOnClickListener {
             startActivityForResult(
-                    Intent(context, AddPaymentActivity::class.java),
-                    REQUEST_ADD)
+                Intent(context, AddPaymentActivity::class.java),
+                REQUEST_ADD
+            )
         }
         initRecyclerView()
 
@@ -58,40 +70,47 @@ class PaymentListFragment : Fragment() {
         }
         when (requestCode) {
             REQUEST_ADD ->
-                    onAddPayment(data?.getParcelableExtra(EXTRA_DATA)!!)
+                onAddPayment(data?.getParcelableExtra(EXTRA_DATA)!!)
         }
     }
 
     private fun initRecyclerView() {
-        mAdapter.onItemChildClickListener =
-                BaseQuickAdapter.OnItemChildClickListener { _, _, position ->
-                    setDefault(position)
-                }
-        mAdapter.onItemClickListener =
-                BaseQuickAdapter.OnItemClickListener { _, _, position ->
-                    selectItem(position)
-                }
+        mAdapter.setOnItemChildClickListener { _, view, position ->
+            run {
+                if (view.id == R.id.rbtn_default) setDefault(
+                    position
+                )
+            }
+        }
+        mAdapter.setOnItemClickListener { _, _, position ->
+            selectItem(position)
+        }
 
-        rv_content.addItemDecoration(
-                DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-        rv_content.adapter = mAdapter
+        binding.rvContent.addItemDecoration(
+            DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+        )
+        binding.rvContent.adapter = mAdapter
     }
 
     private fun initData() {
-        PaymentRepository
+        lifecycleScope.launch {
+            PaymentRepository
                 .getPayments()
-                .async()
-                .subscribe ( Consumer { mAdapter.addData(0, it) } )
+                .await()
+                .let {
+                    mAdapter.addData(0, it)
+                }
+        }
     }
 
-    private fun onAddPayment(payment : Payment) {
+    private fun onAddPayment(payment: Payment) {
         mAdapter.addData(payment)
     }
 
     /**
-    * 保存的时候，会清除掉上一个默认的，所以不需要把原先旧的先清除掉，
-    * 但需要设置为false，因为以让界面生效
-    */
+     * 保存的时候，会清除掉上一个默认的，所以不需要把原先旧的先清除掉，
+     * 但需要设置为false，因为以让界面生效
+     */
     private fun setDefault(position: Int) {
         val oldDefaultPosition = mAdapter.mDefaultPosition
         if (oldDefaultPosition == position) {
@@ -108,18 +127,19 @@ class PaymentListFragment : Fragment() {
         val default = mAdapter.data[position]
         default.isDefault = true
 
-        PaymentRepository
+        lifecycleScope.launch {
+            PaymentRepository
                 .savePayment(default)
-                .subscribe()
+                .await()
+        }
 
         mAdapter.notifyItemChanged(position)
     }
 
-    private fun selectItem(position : Int) {
-        ViewModelProviders
-                .of(this)[SelectPaymentViewModel::class.java]
-                .selected
-                .postValue(mAdapter.data[position])
+    private fun selectItem(position: Int) {
+        ViewModelProvider(this)[SelectPaymentViewModel::class.java]
+            .selected
+            .postValue(mAdapter.data[position])
     }
 
 }

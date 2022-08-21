@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -14,6 +14,8 @@
         android:layout_height="wrap_content"
         android:textColor="#000"
         app:layout_constraintBottom_toBottomOf="@+id/tv_money"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         tools:text="现金"/>
 
     <TextView
@@ -24,6 +26,7 @@
         android:textColor="#ff8635"
         android:textSize="16sp"
         app:layout_constraintLeft_toRightOf="@id/tv_payment"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_payment"
         tools:text="10"/>
 
     <TextView
@@ -33,6 +36,7 @@
         android:layout_marginTop="@dimen/default_item_margin"
         android:textColor="#000"
         app:layout_constraintTop_toBottomOf="@id/tv_payment"
+        app:layout_constraintLeft_toLeftOf="@id/tv_payment"
         tools:text="饮料 - 奶茶"/>
     
     <TextView
@@ -41,6 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/default_item_margin"
         app:layout_constraintTop_toBottomOf="@id/tv_project"
+        app:layout_constraintLeft_toLeftOf="@id/tv_project"
         tools:text="2018-02-24"/>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

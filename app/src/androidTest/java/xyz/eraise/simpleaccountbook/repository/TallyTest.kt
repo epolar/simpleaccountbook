@@ -2,10 +2,6 @@ package xyz.eraise.simpleaccountbook.repository
 
 import android.test.InstrumentationTestCase
 import com.raizlabs.android.dbflow.config.FlowManager
-import com.raizlabs.android.dbflow.sql.Query
-import com.raizlabs.android.dbflow.sql.QueryBuilder
-import com.raizlabs.android.dbflow.sql.SqlUtils
-import com.raizlabs.android.dbflow.sql.queriable.StringQuery
 import io.reactivex.Observable
 import junit.framework.Assert
 import org.junit.After
@@ -46,7 +42,7 @@ class TallyTest: InstrumentationTestCase() {
     fun testTallyList() {
         val random = Random()
         Observable.range(0, 100)
-                .flatMapSingle {TallyRepository.saveTally(Tally(accountBook = mAccountBook,
+                .flatMapSingle {TallyRepository.saveTallyAsync(Tally(accountBook = mAccountBook,
                         payment = mPayment,
                         money = random.nextInt(999_00) + 1_00))}
                 .subscribe(
@@ -55,7 +51,7 @@ class TallyTest: InstrumentationTestCase() {
                         {
 
                             println("account book id == " + mAccountBook.id)
-                            TallyRepository.getTally().subscribe{list -> run {
+                            TallyRepository.getTallyAsync().subscribe{ list -> run {
                                 println("account book for list id == " + list[0].accountBook?.id)
                                 Assert.assertEquals(20, list.size)
                                 Assert.assertEquals(100, list.first().id)}}

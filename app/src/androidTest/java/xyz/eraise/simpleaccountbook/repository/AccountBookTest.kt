@@ -45,7 +45,7 @@ class AccountBookTest: InstrumentationTestCase() {
     fun testSetDefaultAccountBook() {
         daily.isDefault = true
         AccountBookRepository.saveAccountBook(daily)
-                .flatMapMaybe { AccountBookRepository.getDefaultAccountBook()}
+                .flatMapMaybe { AccountBookRepository.getDefaultAccountBookAsync()}
                 .subscribe({
                     println("set default account book is " + it.name)
                     Assert.assertEquals(it.name, "日常")
@@ -63,7 +63,7 @@ class AccountBookTest: InstrumentationTestCase() {
                 .flatMap { AccountBookRepository.saveAccountBook(journey) }
                 .map { daily.isDefault = true }
                 .flatMap { AccountBookRepository.saveAccountBook(daily) }
-                .flatMapMaybe { AccountBookRepository.getDefaultAccountBook()}
+                .flatMapMaybe { AccountBookRepository.getDefaultAccountBookAsync()}
                 .subscribe({
                     println("set default account 2 book is " + it.name)
                     Assert.assertEquals(it.name, daily.name)
@@ -75,7 +75,7 @@ class AccountBookTest: InstrumentationTestCase() {
 
     @Test
     fun testDefaultAccountBook() {
-        AccountBookRepository.getDefaultAccountBook()
+        AccountBookRepository.getDefaultAccountBookAsync()
                 .subscribe({
             println("default account book is " + it.name)
             Assert.assertEquals(it.name, "旅途")

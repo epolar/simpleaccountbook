@@ -2,17 +2,19 @@ package xyz.eraise.simpleaccountbook.ui.tally.add
 
 import android.app.Activity.RESULT_OK
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.chad.library.adapter.base.BaseQuickAdapter
-import io.reactivex.functions.Consumer
-import kotlinx.android.synthetic.main.fragment_add_tally.*
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.launch
 import xyz.eraise.simpleaccountbook.R
+import xyz.eraise.simpleaccountbook.databinding.FragmentAddTallyBinding
 import xyz.eraise.simpleaccountbook.pojo.AccountBook
 import xyz.eraise.simpleaccountbook.pojo.Category
 import xyz.eraise.simpleaccountbook.pojo.Payment
@@ -28,12 +30,10 @@ import xyz.eraise.simpleaccountbook.ui.tally.list.TallyListActivity
 import xyz.eraise.simpleaccountbook.utils.Constants.Companion.EXTRA_DATA
 import xyz.eraise.simpleaccountbook.utils.DateUtils
 import xyz.eraise.simpleaccountbook.utils.PromptUtils
-import xyz.eraise.simpleaccountbook.utils.kotlin.async
 import xyz.eraise.simpleaccountbook.utils.kotlin.isToday
 import java.math.BigDecimal
 import java.text.MessageFormat
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 /**
@@ -47,6 +47,9 @@ class AddTallyFragment : Fragment() {
         private const val REQUEST_CATEGORY = 3
     }
 
+    private var _binding: FragmentAddTallyBinding? = null
+    private val binding get() = _binding!!
+
     private var mPayment: Payment? = null
     private var mAccountBook: AccountBook? = null
     private var mCategory: Category? = null
@@ -59,40 +62,75 @@ class AddTallyFragment : Fragment() {
 
     private val mInputPlateAdapter = InputPlateAdapter()
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?)
-            : View? = inflater.inflate(R.layout.fragment_add_tally,
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentAddTallyBinding.inflate(
+            inflater,
             container,
-            false)
+            false
+        )
+        return binding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // 事件绑定
-        btn_payment.setOnClickListener {
+        binding.btnPayment.setOnClickListener {
             startActivityForResult(
-                    Intent(context, PaymentListActivity::class.java),
-                    REQUEST_PAYMENT)
+                Intent(context, PaymentListActivity::class.java),
+                REQUEST_PAYMENT
+            )
         }
-        btn_account_book.setOnClickListener {
+        binding.btnAccountBook.setOnClickListener {
             startActivityForResult(
-                    Intent(context, AccountBookListActivity::class.java),
-                    REQUEST_ACCOUNT_BOOK)
+                Intent(context, AccountBookListActivity::class.java),
+                REQUEST_ACCOUNT_BOOK
+            )
         }
-        btn_category.setOnClickListener {
+        binding.btnCategory.setOnClickListener {
             startActivityForResult(
-                    Intent(context, CategoryListActivity::class.java),
-                    REQUEST_CATEGORY)
+                Intent(context, CategoryListActivity::class.java),
+                REQUEST_CATEGORY
+            )
         }
-        btn_date.setOnClickListener { pickDate() }
-        btn_list.setOnClickListener {
+        binding.btnDate.setOnClickListener { pickDate() }
+        binding.btnList.setOnClickListener {
             startActivity(Intent(context, TallyListActivity::class.java))
+        }
+
+        binding.etProject.setOnEditorActionListener { _, _, _ ->
+            save()
+            true
         }
 
         initInputPlate()
 
         // 设置默认值显示
         initDefault()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        lifecycleScope.launch {
+            val now = Calendar.getInstance()
+            TallyRepository.sumByMonthAsync(now[Calendar.YEAR], now[Calendar.MONTH])
+                .await()
+                .let {
+                    binding.tvThisMonth.text =
+                        getString(
+                            R.string.add_tally_this_month, it / 100.0
+                        )
+                }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -116,35 +154,28 @@ class AddTallyFragment : Fragment() {
     /**
      * 设置默认值显示
      */
+    @OptIn(DelicateCoroutinesApi::class)
     private fun initDefault() {
-        // 去掉不需要的具体时间
-        val year = mDate[Calendar.YEAR]
-        val month = mDate[Calendar.MONTH]
-        val dayOfMonth = mDate[Calendar.DAY_OF_MONTH]
-        mDate.set(year, month, dayOfMonth, 0, 0, 0)
-
-        PaymentRepository
-                .getDefaultPayment()
-                .async()
-                .subscribe { setPayment(it) }
-        AccountBookRepository
-                .getDefaultAccountBook()
-                .async()
-                .subscribe { setAccountBook(it) }
-        CategoryRepository
-                .getDefaultCategory()
-                .async()
-                .subscribe { setCategory(it) }
+        lifecycleScope.launch {
+            PaymentRepository
+                .getDefaultPaymentAsync()
+                .await().let { setPayment(it) }
+            AccountBookRepository
+                .getDefaultAccountBookAsync()
+                .await().let { setAccountBook(it) }
+            CategoryRepository
+                .getDefaultCategoryAsync()
+                .await().let { setCategory(it) }
+        }
     }
 
     /**
      * 初始化数字输入控件
      */
     private fun initInputPlate() {
-        mInputPlateAdapter.onItemClickListener =
-                BaseQuickAdapter.OnItemClickListener { _, _, position ->
-                    onClickInput(position)
-                }
+        mInputPlateAdapter.setOnItemClickListener { _, _, position ->
+            onClickInput(position)
+        }
 
         val numbers = resources.getStringArray(R.array.add_tally_input_numbers)
         // 第一排
@@ -168,8 +199,8 @@ class AddTallyFragment : Fragment() {
         mInputPlateAdapter.addData(numbers[10])
         mInputPlateAdapter.addData(numbers[11])
 
-        rv_input_plate.layoutManager = GridLayoutManager(context, 4)
-        rv_input_plate.adapter = mInputPlateAdapter
+        binding.rvInputPlate.layoutManager = GridLayoutManager(context, 4)
+        binding.rvInputPlate.adapter = mInputPlateAdapter
     }
 
     /**
@@ -178,7 +209,7 @@ class AddTallyFragment : Fragment() {
     private fun onClickInput(position: Int) {
         when (position) {
             0, 1, 2, 4, 5, 6, 8, 9, 10, 13 ->
-                onInputNumber(mInputPlateAdapter.getItem(position)!!)
+                onInputNumber(mInputPlateAdapter.getItem(position))
             14 -> onInputDot()
             3 -> onInputBack()
             7 -> onInputOperate("+")
@@ -188,17 +219,18 @@ class AddTallyFragment : Fragment() {
     }
 
     private fun isLastInputIsOperation(): Boolean {
-        if (tv_equation.text.isEmpty()) {
+        if (binding.tvEquation.text.isEmpty()) {
             return false
         }
-        val lastInput = tv_equation.text.last().toString()
+        val lastInput = binding.tvEquation.text.last().toString()
         return lastInput == "+" || lastInput == "-"
     }
 
     private fun str2BigDecimal(numberStr: String): BigDecimal {
         return if (numberStr.endsWith(".")) {
             BigDecimal(
-                    numberStr.substring(0, numberStr.length - 1))
+                numberStr.substring(0, numberStr.length - 1)
+            )
         } else {
             BigDecimal(numberStr)
         }
@@ -219,8 +251,8 @@ class AddTallyFragment : Fragment() {
             // 上一次输入的也是运算符号，清除掉
             onInputBack()
         }
-        tv_equation.append(operate)
-        tv_equation.visibility = View.VISIBLE
+        binding.tvEquation.append(operate)
+        binding.tvEquation.visibility = View.VISIBLE
         mOperations.add(operate)
     }
 
@@ -231,14 +263,14 @@ class AddTallyFragment : Fragment() {
         when {
             isLastInputIsOperation() -> {
                 mNumbers.add("0.")
-                tv_equation.append("0.")
+                binding.tvEquation.append("0.")
             }
             mNumbers.last().contains(".") -> return
             else -> {
                 var lastNumber = mNumbers.removeAt(mNumbers.size - 1)
                 lastNumber += "."
                 mNumbers.add(lastNumber)
-                tv_equation.append(".")
+                binding.tvEquation.append(".")
             }
         }
     }
@@ -247,17 +279,17 @@ class AddTallyFragment : Fragment() {
      * 按删除
      */
     private fun onInputBack() {
-        if (tv_equation.text.length <= 1) {
-            et_money.text = ""
-            tv_equation.text = ""
+        if (binding.tvEquation.text.length <= 1) {
+            binding.etMoney.text = ""
+            binding.tvEquation.text = ""
             mNumbers.clear()
             mOperations.clear()
             mAmount = BigDecimal.ZERO
-            tv_equation.visibility = View.GONE
+            binding.tvEquation.visibility = View.GONE
         } else {
-            val deleteChar = tv_equation.text.last().toString()
-            tv_equation.text = tv_equation.text
-                    .subSequence(0, tv_equation.text.length - 1)
+            val deleteChar = binding.tvEquation.text.last().toString()
+            binding.tvEquation.text = binding.tvEquation.text
+                .subSequence(0, binding.tvEquation.text.length - 1)
             if (deleteChar == "+" || deleteChar == "-") {
                 // 符号不会影响到数字
                 mOperations.removeAt(mOperations.size - 1)
@@ -282,9 +314,10 @@ class AddTallyFragment : Fragment() {
                     mNumbers.add(lastNumber)
                 }
             }
-            et_money.text = MessageFormat.format(
-                    "{0, number, #.##}",
-                    mAmount.toDouble())
+            binding.etMoney.text = MessageFormat.format(
+                "{0, number, #.##}",
+                mAmount.toDouble()
+            )
         }
     }
 
@@ -293,10 +326,10 @@ class AddTallyFragment : Fragment() {
      */
     private fun onInputNumber(numberStr: CharSequence) {
         var lastNumber =
-                if (tv_equation.text.isEmpty() || isLastInputIsOperation())
-                    ""
-                else
-                    mNumbers.removeAt(mNumbers.size - 1)
+            if (binding.tvEquation.text.isEmpty() || isLastInputIsOperation())
+                ""
+            else
+                mNumbers.removeAt(mNumbers.size - 1)
         if (lastNumber.isNotEmpty()) {
             mAmount = mAmount.subtract(str2BigDecimal(lastNumber))
         }
@@ -308,61 +341,80 @@ class AddTallyFragment : Fragment() {
         }
         mNumbers.add(lastNumber)
 
-        tv_equation.append(numberStr)
-        et_money.text = MessageFormat.format(
-                "{0, number, #.##}",
-                mAmount.toDouble())
+        binding.tvEquation.append(numberStr)
+        binding.etMoney.text = MessageFormat.format(
+            "{0, number, #.##}",
+            mAmount.toDouble()
+        )
     }
 
     private fun pickDate() {
-        val datePickerDialog = DatePickerDialog(context,
-                DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                    setDate(year, month, dayOfMonth)
-                },
-                mDate[Calendar.YEAR],
-                mDate[Calendar.MONTH],
-                mDate[Calendar.DAY_OF_MONTH])
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            { _, year, month, dayOfMonth ->
+                pickTime(year, month, dayOfMonth)
+            },
+            mDate[Calendar.YEAR],
+            mDate[Calendar.MONTH],
+            mDate[Calendar.DAY_OF_MONTH]
+        )
         datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
         datePickerDialog.show()
     }
 
+    private fun pickTime(year: Int, month: Int, dayOfMonth: Int) {
+        val timePickerDialog = TimePickerDialog(
+            requireContext(),
+            { _, hour, minute ->
+                setDate(year, month, dayOfMonth, hour, minute)
+            },
+            mDate.get(Calendar.HOUR_OF_DAY),
+            mDate.get(Calendar.MINUTE),
+            true,
+        )
+        timePickerDialog.show()
+    }
+
     private fun setPayment(payment: Payment?) {
         mPayment = payment
-        btn_payment.text = payment?.name ?: getString(R.string.add_tally_payment)
+        binding.btnPayment.text = payment?.name ?: getString(R.string.add_tally_payment)
     }
 
     private fun setAccountBook(accountBook: AccountBook?) {
         mAccountBook = accountBook
-        btn_account_book.text = accountBook?.name ?: getString(R.string.add_tally_account_book)
+        binding.btnAccountBook.text =
+            accountBook?.name ?: getString(R.string.add_tally_account_book)
     }
 
     private fun setCategory(category: Category?) {
         mCategory = category
-        btn_category.text = category?.name ?: getString(R.string.add_tally_category)
+        binding.btnCategory.text = category?.name ?: getString(R.string.add_tally_category)
     }
 
-    private fun setDate(year: Int, month: Int, dayOfMonth: Int) {
+    private fun setDate(year: Int, month: Int, dayOfMonth: Int, hour: Int, minute: Int) {
         mDate.set(Calendar.YEAR, year)
         mDate.set(Calendar.MONTH, month)
         mDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+        mDate.set(Calendar.HOUR, hour)
+        mDate.set(Calendar.MINUTE, minute)
         if (mDate.isToday()) {
-            btn_date.setText(R.string.add_tally_today)
+            binding.btnDate.setText(R.string.add_tally_today)
         } else {
-            btn_date.text =
-                    DateUtils.timestampToDateStr(mDate.timeInMillis)
+            binding.btnDate.text =
+                DateUtils.timestampToDateStr(mDate.timeInMillis)
         }
     }
 
     private fun save() {
-        if (tv_equation.text.isEmpty()) {
+        if (binding.tvEquation.text.isEmpty()) {
             PromptUtils.toast(R.string.add_tally_money_should_not_be_empty)
             return
         }
 
         // 四舍五入后转到分为单位
         val money = mAmount.multiply(BigDecimal.valueOf(100))
-                .toDouble()
-                .roundToInt()
+            .toDouble()
+            .roundToInt()
 
         if (mPayment == null) {
             PromptUtils.toast(R.string.add_tally_payment_should_selected)
@@ -377,24 +429,25 @@ class AddTallyFragment : Fragment() {
             return
         }
         val tally = Tally(
-                accountBook = mAccountBook,
-                payment = mPayment,
-                category = mCategory,
-                project = et_project.text.toString(),
-                money = money,
-                payTime = mDate.timeInMillis)
+            accountBook = mAccountBook,
+            payment = mPayment,
+            category = mCategory,
+            project = binding.etProject.text.toString(),
+            money = money,
+            payTime = mDate.timeInMillis
+        )
         TallyRepository
-                .saveTally(tally)
-                .subscribe(Consumer { onSaveSuccess() })
+            .saveTallyAsync(tally)
+            .let { onSaveSuccess() }
     }
 
     private fun onSaveSuccess() {
         PromptUtils.toast(R.string.add_tally_save_success)
         mAmount = BigDecimal.ZERO
-        tv_equation.requestFocus()
-        tv_equation.text = ""
-        et_money.text = ""
-        et_project.text.clear()
+        binding.tvEquation.requestFocus()
+        binding.tvEquation.text = ""
+        binding.etMoney.text = ""
+        binding.etProject.text.clear()
         mNumbers.clear()
         mOperations.clear()
     }

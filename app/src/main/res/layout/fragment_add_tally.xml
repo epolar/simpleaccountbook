@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_this_month"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/default_horizontal_margin"
+        app:layout_constraintBottom_toBottomOf="@id/btn_date"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btn_date"
+        tools:text="本月: 3000" />
 
     <Button
         android:id="@+id/btn_date"
@@ -12,26 +21,25 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/default_horizontal_margin"
         android:layout_marginEnd="@dimen/default_horizontal_margin"
+        android:backgroundTint="#FFF"
         android:minHeight="0dp"
         android:text="@string/add_tally_today"
-        android:backgroundTint="#FFF"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btn_list"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/add_tally_btn_list"
         android:layout_marginEnd="@dimen/default_item_margin"
-        android:layout_marginBottom="20dp"
-        android:minHeight="0dp"
         android:backgroundTint="#FFF"
+        android:minHeight="0dp"
+        android:text="@string/add_tally_btn_list"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        />
-    
+        app:layout_constraintTop_toTopOf="parent" />
+
     <View
         android:id="@+id/divider_top"
         android:layout_width="0dp"
@@ -39,22 +47,20 @@
         android:background="@color/dividerColor"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_date"
-        />
+        app:layout_constraintTop_toBottomOf="@id/btn_date" />
 
     <Button
         android:id="@+id/btn_payment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:layout_marginStart="@dimen/default_horizontal_margin"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="@dimen/default_horizontal_margin"
+        android:backgroundTint="#FFF"
         android:ems="6"
         android:text="@string/add_tally_payment"
-        android:backgroundTint="#FFF"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider_top"
-        />
+        app:layout_constraintTop_toBottomOf="@id/divider_top" />
 
     <TextView
         android:id="@+id/tv_equation"
@@ -68,79 +74,75 @@
         app:layout_constraintLeft_toRightOf="@id/btn_payment"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@id/btn_payment"
-        tools:text="20+30"
-        />
+        tools:text="20+30" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/et_money"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="@dimen/default_horizontal_margin"
         android:layout_marginEnd="@dimen/default_horizontal_margin"
-        android:gravity="center_vertical"
+        android:autoSizeTextType="uniform"
         android:focusable="true"
         android:focusableInTouchMode="true"
+        android:gravity="center_vertical"
+        android:hint="0"
         android:textColor="@color/gold"
         android:textColorHint="@color/gold"
-        android:hint="0"
-        android:autoSizeTextType="uniform"
         app:autoSizeTextType="uniform"
-        app:layout_constraintTop_toBottomOf="@id/tv_equation"
         app:layout_constraintBottom_toBottomOf="@id/btn_payment"
         app:layout_constraintLeft_toRightOf="@id/btn_payment"
         app:layout_constraintRight_toRightOf="parent"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tv_equation" />
 
     <Button
         android:id="@+id/btn_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_item_margin"
         android:layout_marginStart="@dimen/default_horizontal_margin"
+        android:layout_marginTop="@dimen/default_item_margin"
         android:layout_marginEnd="@dimen/default_horizontal_margin"
+        android:backgroundTint="#FFF"
         android:ems="6"
         android:text="@string/add_tally_category"
-        android:backgroundTint="#FFF"
-        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="@+id/et_project"
-        />
+        app:layout_constraintLeft_toLeftOf="parent" />
 
     <EditText
         android:id="@+id/et_project"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:lines="1"
-        android:layout_marginTop="@dimen/default_item_margin"
         android:layout_marginStart="@dimen/default_horizontal_margin"
+        android:layout_marginTop="@dimen/default_item_margin"
         android:layout_marginEnd="@dimen/default_horizontal_margin"
         android:hint="@string/add_tally_project"
-        app:layout_constraintTop_toBottomOf="@id/et_money"
+        android:lines="1"
+        android:singleLine="true"
         app:layout_constraintLeft_toRightOf="@id/btn_category"
         app:layout_constraintRight_toRightOf="parent"
-        />
+        app:layout_constraintTop_toBottomOf="@id/et_money" />
 
     <Button
         android:id="@+id/btn_account_book"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_item_margin"
         android:layout_marginStart="@dimen/default_horizontal_margin"
+        android:layout_marginTop="@dimen/default_item_margin"
         android:layout_marginEnd="@dimen/default_horizontal_margin"
-        android:text="@string/add_tally_account_book"
         android:backgroundTint="#FFF"
-        app:layout_constraintTop_toBottomOf="@id/et_project"
+        android:text="@string/add_tally_account_book"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        />
+        app:layout_constraintTop_toBottomOf="@id/et_project" />
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_input_plate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:spanCount="4" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

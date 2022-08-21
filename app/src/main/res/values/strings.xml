@@ -23,9 +23,11 @@
     <string name="add_tally_account_book_should_selected">请选择账本</string>
     <string name="add_tally_category_should_selected">请选择分类</string>
     <string name="add_tally_save_success">保存成功</string>
+    <string name="add_tally_this_month">本月: %1$.2f</string>
     <string name="add_payment_name">支付方式名称</string>
     <string name="add_payment_save">添加</string>
     <string name="add_payment_name_should_not_be_empty">支付方式名称不得为空</string>
+    <string name="add_payment_success">保存成功</string>
     <string name="add_account_book_name">账本名称</string>
     <string name="add_account_book_save">添加</string>
     <string name="add_account_book_name_should_not_be_empty">账本名称不得为空</string>

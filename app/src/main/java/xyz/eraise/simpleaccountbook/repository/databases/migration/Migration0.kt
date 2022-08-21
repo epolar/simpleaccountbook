@@ -1,10 +1,10 @@
 package xyz.eraise.simpleaccountbook.repository.databases.migration
 
-import com.raizlabs.android.dbflow.annotation.Migration
-import com.raizlabs.android.dbflow.config.FlowManager
-import com.raizlabs.android.dbflow.sql.migration.BaseMigration
-import com.raizlabs.android.dbflow.structure.database.DatabaseWrapper
-import com.raizlabs.android.dbflow.structure.database.transaction.FastStoreModelTransaction
+import com.dbflow5.annotation.Migration
+import com.dbflow5.config.FlowManager
+import com.dbflow5.database.DatabaseWrapper
+import com.dbflow5.migration.BaseMigration
+import com.dbflow5.transaction.FastStoreModelTransaction
 import xyz.eraise.simpleaccountbook.MyApp
 import xyz.eraise.simpleaccountbook.R
 import xyz.eraise.simpleaccountbook.pojo.AccountBook

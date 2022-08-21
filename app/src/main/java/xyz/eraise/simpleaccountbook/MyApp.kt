@@ -1,9 +1,9 @@
 package xyz.eraise.simpleaccountbook
 
 import android.app.Application
-import com.raizlabs.android.dbflow.config.DatabaseConfig
-import com.raizlabs.android.dbflow.config.FlowConfig
-import com.raizlabs.android.dbflow.config.FlowManager
+import com.dbflow5.config.DatabaseConfig
+import com.dbflow5.config.FlowConfig
+import com.dbflow5.config.FlowManager
 import net.sqlcipher.database.SQLiteDatabase
 import xyz.eraise.simpleaccountbook.repository.databases.AppDatabase
 import xyz.eraise.simpleaccountbook.repository.databases.SQLCipherHelperImpl
@@ -16,7 +16,7 @@ import kotlin.properties.Delegates
 class MyApp : Application() {
 
     companion object {
-        var instance : MyApp by Delegates.notNull()
+        var instance: MyApp by Delegates.notNull()
     }
 
     override fun onCreate() {
@@ -24,13 +24,14 @@ class MyApp : Application() {
         instance = this
 
         SQLiteDatabase.loadLibs(this)
-        val dbConfig = FlowConfig.Builder(this)
-                .addDatabaseConfig(DatabaseConfig
-                        .Builder(AppDatabase::class.java)
-                        .openHelper { databaseDefinition, helperListener ->
-                            SQLCipherHelperImpl(databaseDefinition, helperListener) }
-                        .build())
+        val dbConfig = FlowConfig.Builder(this).database(
+            DatabaseConfig
+                .Builder(AppDatabase::class) { databaseDefinition, helperListener ->
+                    SQLCipherHelperImpl(this, databaseDefinition, helperListener)
+                }
+                .databaseName("AppDatabase")
                 .build()
+        ).build()
         FlowManager.init(dbConfig)
     }
 

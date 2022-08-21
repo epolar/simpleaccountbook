@@ -1,16 +1,15 @@
 package xyz.eraise.simpleaccountbook.ui.tally.list
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.DividerItemDecoration
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import io.reactivex.functions.Consumer
-import kotlinx.android.synthetic.main.fragment_list_tally.*
-import xyz.eraise.simpleaccountbook.R
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
+import kotlinx.coroutines.launch
+import xyz.eraise.simpleaccountbook.databinding.FragmentListTallyBinding
 import xyz.eraise.simpleaccountbook.repository.TallyRepository
-import xyz.eraise.simpleaccountbook.utils.kotlin.async
 
 /**
  * Created by eraise on 2018/2/24.
@@ -18,15 +17,28 @@ import xyz.eraise.simpleaccountbook.utils.kotlin.async
 class TallyListFragment : Fragment() {
 
     private val mAdapter = TallyAdapter()
+    private var _binding: FragmentListTallyBinding? = null
+    private val binding get() = _binding!!
+    private var page = 0
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?)
-            : View? = inflater
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentListTallyBinding
             .inflate(
-                    R.layout.fragment_list_tally,
-                    container,
-                    false)
+                inflater,
+                container,
+                false
+            )
+        return binding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -36,17 +48,39 @@ class TallyListFragment : Fragment() {
     }
 
     private fun initRecyclerView() {
-        rv_content.addItemDecoration(DividerItemDecoration(
+        binding.rvContent.addItemDecoration(
+            DividerItemDecoration(
                 context,
-                DividerItemDecoration.VERTICAL))
-        rv_content.adapter = mAdapter
+                DividerItemDecoration.VERTICAL
+            )
+        )
+        mAdapter.loadMoreModule.setOnLoadMoreListener {
+            loadData(page)
+        }
+
+        binding.rvContent.adapter = mAdapter
     }
 
     private fun initData() {
-        TallyRepository
-                .getTally()
-                .async()
-                .subscribe ( Consumer { mAdapter.addData(0, it) } )
+        loadData()
+    }
+
+    private fun loadData(pageIndex: Int = 0, pageSize: Int = 20) {
+        lifecycleScope.launch {
+            TallyRepository
+                .getTallyAsync(pageIndex, pageSize)
+                .await().let {
+                    if (it.size == 0) {
+                        mAdapter.loadMoreModule.isEnableLoadMore = false
+                    }
+                    if (pageIndex == 0) {
+                        mAdapter.data = mutableListOf()
+                    }
+                    mAdapter.addData(it)
+                    page = pageIndex + 1
+                    mAdapter.loadMoreModule.loadMoreComplete()
+                }
+        }
     }
 
 }

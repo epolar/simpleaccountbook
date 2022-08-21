@@ -1,12 +1,14 @@
 package xyz.eraise.simpleaccountbook.ui.splash
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import xyz.eraise.simpleaccountbook.R
 import xyz.eraise.simpleaccountbook.ui.tally.add.AddTallyActivity
 
-class SplashActivity : AppCompatActivity() {
+@SuppressLint("CustomSplashScreen")
+class SplashActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

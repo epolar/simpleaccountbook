@@ -1,6 +1,6 @@
 package xyz.eraise.simpleaccountbook.ui.tally.list
 
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import xyz.eraise.simpleaccountbook.ui.BaseActivity
 
 /**

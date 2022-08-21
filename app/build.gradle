@@ -1,12 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
-apply from: "ext.gradle"
-
 android {
-    compileSdkVersion 27
+    compileSdkVersion 32
     signingConfigs {
         defaultConfig {
             storeFile file("../keystore.jks")
@@ -18,7 +15,7 @@ android {
     defaultConfig {
         applicationId "xyz.eraise.simpleaccountbook"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 32
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -34,47 +31,73 @@ android {
             resValue("string", "DB_PASSWORD_APPDATABASE", "SimpleAccountBook") // SQLCipher密码
         }
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    //noinspection GradleCompatible
-    implementation "com.android.support:appcompat-v7:$support_version"
-    implementation "com.android.support:recyclerview-v7:$support_version"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.10"
+    implementation "androidx.appcompat:appcompat:1.5.0"
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
+    implementation "com.google.android.material:material:1.6.1"
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
-    // ViewModel and LiveData
-    implementation "android.arch.lifecycle:extensions:1.1.1"
-    annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
-    // ReactiveStreams support for LiveData
-    implementation "android.arch.lifecycle:reactivestreams:1.1.1"
+    def lifecycle_version = "2.6.0-alpha01"
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    // ViewModel utilities for Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
+    // alternately - if using Java8, use the following instead of lifecycle-compiler
+    implementation("androidx.lifecycle:lifecycle-common-java8:$lifecycle_version")
+    // optional - ReactiveStreams support for LiveData
+    implementation("androidx.lifecycle:lifecycle-reactivestreams-ktx:$lifecycle_version")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
 
-    // Paging
-    implementation "android.arch.paging:runtime:1.0.1"
+    def paging_version = "3.1.1"
 
+    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
+    implementation "androidx.paging:paging-rxjava2-ktx:$paging_version"
 
     // rxjava
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+//    implementation 'io.reactivex.rxjava3:rxkotlin:3.1.5'
 
     // dbflow
-    kapt "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
-    implementation "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
-    implementation "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
+    def dbflow_version = "5.0.0-alpha2"
+    // Use if Kotlin user.
+    kapt "com.github.agrosner.dbflow:processor:${dbflow_version}"
+
+    // core set of libraries
+    implementation "com.github.agrosner.dbflow:core:${dbflow_version}"
+    implementation "com.github.agrosner.dbflow:lib:${dbflow_version}"
+
     // sql-cipher database encryption (optional)
-    implementation "com.github.Raizlabs.DBFlow:dbflow-sqlcipher:${dbflow_version}"
-    implementation "net.zetetic:android-database-sqlcipher:${sqlcipher_version}@aar"
-    // kotlin extensions
-    implementation "com.github.Raizlabs.DBFlow:dbflow-kotlinextensions:${dbflow_version}"
-    // RXJava 2 Kotlin Extensions Support
-    implementation "com.github.Raizlabs.DBFlow:dbflow-rx2-kotlinextensions:${dbflow_version}"
-    // BaseRecyclerViewAdapterHelper
-    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.40'
+    implementation "com.github.agrosner.dbflow:sqlcipher:${dbflow_version}"
+    implementation "net.zetetic:android-database-sqlcipher:4.5.0@aar"
+
+    // RXJava 2 support
+    implementation "com.github.agrosner.dbflow:reactive-streams:${dbflow_version}"
+
+    // Kotlin Coroutines
+    implementation "com.github.agrosner.dbflow:coroutines:${dbflow_version}"
+
+    // Android Architecture Components Paging Library Support
+    implementation "com.github.agrosner.dbflow:paging:${dbflow_version}"
+
+    // Android Architecture Components LiveData Library Support
+    implementation "com.github.agrosner.dbflow:livedata:${dbflow_version}"
+
+    // adds generated content provider annotations + support.
+    implementation "com.github.agrosner.dbflow:contentprovider:${dbflow_version}"
+
+    kapt 'com.squareup:javapoet:1.10.0'
+    kapt 'com.github.agrosner:KPoet:1.0.0'
 
     // debug databases
-    debugImplementation 'com.amitshekhar.android:debug-db:1.0.3'
+//    debugImplementation 'com.amitshekhar.android:debug-db:1.0.3'
+
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.7'
 }

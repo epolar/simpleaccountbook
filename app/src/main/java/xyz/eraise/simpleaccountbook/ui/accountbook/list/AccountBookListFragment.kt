@@ -1,23 +1,21 @@
 package xyz.eraise.simpleaccountbook.ui.accountbook.list
 
 import android.app.Activity.RESULT_OK
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.DividerItemDecoration
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.chad.library.adapter.base.BaseQuickAdapter
-import io.reactivex.functions.Consumer
-import kotlinx.android.synthetic.main.fragment_list_account_book.*
-import xyz.eraise.simpleaccountbook.R
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
+import kotlinx.coroutines.launch
+import xyz.eraise.simpleaccountbook.databinding.FragmentListAccountBookBinding
 import xyz.eraise.simpleaccountbook.pojo.AccountBook
 import xyz.eraise.simpleaccountbook.repository.AccountBookRepository
 import xyz.eraise.simpleaccountbook.ui.accountbook.add.AddAccountBookActivity
 import xyz.eraise.simpleaccountbook.utils.Constants.Companion.EXTRA_DATA
-import xyz.eraise.simpleaccountbook.utils.kotlin.async
 
 /**
  * Created by eraise on 2018/2/23.
@@ -30,23 +28,33 @@ class AccountBookListFragment : Fragment() {
 
     private val mAdapter = AccountBookAdapter()
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?)
-            :View? =
-            inflater.inflate(R.layout.fragment_list_account_book,
-                    container,
-                    false)
+    private var _binding: FragmentListAccountBookBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentListAccountBookBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initRecyclerView()
 
-        btn_add.setOnClickListener {
+        binding.btnAdd.setOnClickListener {
             startActivityForResult(
-                    Intent(context, AddAccountBookActivity::class.java),
-                    REQUEST_ADD)
+                Intent(context, AddAccountBookActivity::class.java),
+                REQUEST_ADD
+            )
         }
 
         initData()
@@ -65,25 +73,26 @@ class AccountBookListFragment : Fragment() {
     }
 
     private fun initData() {
-        AccountBookRepository
+        lifecycleScope.launch {
+            AccountBookRepository
                 .getAccountBooks()
-                .async()
-                .subscribe( Consumer { mAdapter.addData(0, it) } )
+                .await()
+                .let { mAdapter.addData(it) }
+        }
     }
 
     private fun initRecyclerView() {
-        mAdapter.onItemChildClickListener =
-                BaseQuickAdapter.OnItemChildClickListener { _, _, position ->
-                    setDefault(position)
-                }
-        mAdapter.onItemClickListener =
-                BaseQuickAdapter.OnItemClickListener { _, _, position ->
-                    selectItem(position)
-                }
+        mAdapter.setOnItemChildClickListener { _, _, position ->
+            setDefault(position)
+        }
+        mAdapter.setOnItemClickListener { _, _, position ->
+            selectItem(position)
+        }
 
-        rv_content.addItemDecoration(
-                DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
-        rv_content.adapter = mAdapter
+        binding.rvContent.addItemDecoration(
+            DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
+        )
+        binding.rvContent.adapter = mAdapter
     }
 
     /**
@@ -106,9 +115,11 @@ class AccountBookListFragment : Fragment() {
         val default = mAdapter.data[position]
         default.isDefault = true
 
-        AccountBookRepository
+        lifecycleScope.launch {
+            AccountBookRepository
                 .saveAccountBook(default)
-                .subscribe()
+                .await()
+        }
 
         mAdapter.notifyItemChanged(position)
     }
@@ -116,10 +127,9 @@ class AccountBookListFragment : Fragment() {
     private fun onAdd(new: AccountBook) = mAdapter.addData(new)
 
     private fun selectItem(position: Int) {
-        ViewModelProviders
-                .of(this)[SelectAccountBookViewModel::class.java]
-                .selected
-                .postValue(mAdapter.data[position])
+        ViewModelProvider(this)[SelectAccountBookViewModel::class.java]
+            .selected
+            .postValue(mAdapter.data[position])
     }
 
 }

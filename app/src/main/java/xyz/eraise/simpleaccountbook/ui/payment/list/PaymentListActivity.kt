@@ -1,10 +1,10 @@
 package xyz.eraise.simpleaccountbook.ui.payment.list
 
 import android.app.Activity
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import xyz.eraise.simpleaccountbook.pojo.Payment
 import xyz.eraise.simpleaccountbook.ui.BaseActivity
 import xyz.eraise.simpleaccountbook.utils.Constants.Companion.EXTRA_DATA
@@ -19,16 +19,16 @@ class PaymentListActivity : BaseActivity() {
     override fun onStart() {
         super.onStart()
 
-        ViewModelProviders
-                .of(getFragment())[SelectPaymentViewModel::class.java]
-                .selected
-                .observe(this, Observer { onSelected(it!!) })
+        ViewModelProvider(this)[SelectPaymentViewModel::class.java]
+            .selected
+            .observe(this) { onSelected(it!!) }
     }
 
-    private fun onSelected(payment : Payment) {
+    private fun onSelected(payment: Payment) {
         setResult(
-                Activity.RESULT_OK,
-                Intent().putExtra(EXTRA_DATA, payment))
+            Activity.RESULT_OK,
+            Intent().putExtra(EXTRA_DATA, payment)
+        )
         finish()
     }
 

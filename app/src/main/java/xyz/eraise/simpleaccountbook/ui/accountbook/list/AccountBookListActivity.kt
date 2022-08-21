@@ -1,9 +1,8 @@
 package xyz.eraise.simpleaccountbook.ui.accountbook.list
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import xyz.eraise.simpleaccountbook.pojo.AccountBook
 import xyz.eraise.simpleaccountbook.ui.BaseActivity
 import xyz.eraise.simpleaccountbook.utils.Constants.Companion.EXTRA_DATA
@@ -19,10 +18,9 @@ class AccountBookListActivity : BaseActivity() {
 
     override fun onStart() {
         super.onStart()
-        ViewModelProviders
-                .of(fragment)[SelectAccountBookViewModel::class.java]
-                .selected
-                .observe(this, Observer { selected(it!!) } )
+        ViewModelProvider(this)[SelectAccountBookViewModel::class.java]
+            .selected
+            .observe(this) { selected(it!!) }
     }
 
     private fun selected(accountBook: AccountBook) {

@@ -21,14 +21,6 @@
 #-renamesourcefileattribute SourceFile
 
 # DbFlow
--keep class * extends com.raizlabs.android.dbflow.config.DatabaseHolder { *; }
-
-# BaseRecyclerViewAdapterHelper
--keep class com.chad.library.adapter.** {
-*;
-}
--keep public class * extends com.chad.library.adapter.base.BaseQuickAdapter
--keep public class * extends com.chad.library.adapter.base.BaseViewHolder
--keepclassmembers  class **$** extends com.chad.library.adapter.base.BaseViewHolder {
-     <init>(...);
-}
+-keep class * extends com.dbflow5.config.DatabaseHolder { *; }
+-keep class net.sqlcipher.** { *; }
+-dontwarn net.sqlcipher.**
