@@ -2,8 +2,8 @@ package xyz.eraise.simpleaccountbook.ui.payment.list
 
 import android.app.Activity
 import android.content.Intent
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import xyz.eraise.simpleaccountbook.pojo.Payment
 import xyz.eraise.simpleaccountbook.ui.BaseActivity

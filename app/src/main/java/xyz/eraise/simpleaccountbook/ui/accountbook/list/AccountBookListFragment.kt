@@ -75,7 +75,7 @@ class AccountBookListFragment : Fragment() {
     private fun initData() {
         lifecycleScope.launch {
             AccountBookRepository
-                .getAccountBooks()
+                .getAccountBooksAsync()
                 .await()
                 .let { mAdapter.addData(it) }
         }
@@ -117,7 +117,7 @@ class AccountBookListFragment : Fragment() {
 
         lifecycleScope.launch {
             AccountBookRepository
-                .saveAccountBook(default)
+                .saveAccountBookAsync(default)
                 .await()
         }
 
@@ -127,7 +127,7 @@ class AccountBookListFragment : Fragment() {
     private fun onAdd(new: AccountBook) = mAdapter.addData(new)
 
     private fun selectItem(position: Int) {
-        ViewModelProvider(this)[SelectAccountBookViewModel::class.java]
+        ViewModelProvider(requireActivity())[SelectAccountBookViewModel::class.java]
             .selected
             .postValue(mAdapter.data[position])
     }

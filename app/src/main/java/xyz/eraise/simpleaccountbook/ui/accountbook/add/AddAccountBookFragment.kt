@@ -50,7 +50,7 @@ class AddAccountBookFragment : Fragment() {
         val newAccountBook = AccountBook(name)
         lifecycleScope.launch {
             AccountBookRepository
-                .saveAccountBook(newAccountBook)
+                .saveAccountBookAsync(newAccountBook)
                 .await().let {
                     if (it) onSaveSuccess(newAccountBook)
                 }
@@ -58,7 +58,7 @@ class AddAccountBookFragment : Fragment() {
     }
 
     private fun onSaveSuccess(newAccountBook: AccountBook) {
-        ViewModelProvider(this)[AddAccountBookViewModel::class.java]
+        ViewModelProvider(requireActivity())[AddAccountBookViewModel::class.java]
             .addAccountBook
             .postValue(newAccountBook)
     }

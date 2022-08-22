@@ -91,7 +91,7 @@ class CategoryListFragment : Fragment() {
     private fun initData() {
         lifecycleScope.launch {
             CategoryRepository
-                .getCategorys()
+                .getCategorysAsync()
                 .await()
                 .let {
                     mAdapter.addData(it)
@@ -125,7 +125,7 @@ class CategoryListFragment : Fragment() {
 
         lifecycleScope.launch {
             CategoryRepository
-                .saveCategory(default)
+                .saveCategoryAsync(default)
                 .await()
         }
 
@@ -133,7 +133,7 @@ class CategoryListFragment : Fragment() {
     }
 
     private fun selectItem(position: Int) {
-        ViewModelProvider(this)[SelectCategoryViewModel::class.java]
+        ViewModelProvider(requireActivity())[SelectCategoryViewModel::class.java]
             .selected
             .postValue(mAdapter.data[position])
     }

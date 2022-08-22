@@ -50,7 +50,7 @@ class AddCategoryFragment : Fragment() {
         val category = Category(name)
         lifecycleScope.launch{
             CategoryRepository
-                .saveCategory(category)
+                .saveCategoryAsync(category)
                 .await()
                 .let {
                     if (it)
@@ -60,7 +60,7 @@ class AddCategoryFragment : Fragment() {
     }
 
     private fun onSaveSuccess(newCategory: Category) {
-        ViewModelProvider(this)[AddCategoryViewModel::class.java]
+        ViewModelProvider(requireActivity())[AddCategoryViewModel::class.java]
             .addCategory
             .postValue(newCategory)
     }

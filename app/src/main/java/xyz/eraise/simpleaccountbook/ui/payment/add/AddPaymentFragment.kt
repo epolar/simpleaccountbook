@@ -55,14 +55,14 @@ class AddPaymentFragment : Fragment() {
         val payment = Payment(name)
         lifecycleScope.launch {
             PaymentRepository
-                .savePayment(payment)
+                .savePaymentAsync(payment)
                 .await().let { if (it) onSaveSuccess(payment) }
         }
     }
 
     private fun onSaveSuccess(payment: Payment) {
         Toast.makeText(context, R.string.add_payment_success, Toast.LENGTH_SHORT).show()
-        ViewModelProvider(this)[AddPaymentViewModel::class.java]
+        ViewModelProvider(requireActivity())[AddPaymentViewModel::class.java]
             .addPayment
             .postValue(payment)
     }

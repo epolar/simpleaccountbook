@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import kotlinx.coroutines.launch
-import xyz.eraise.simpleaccountbook.R
 import xyz.eraise.simpleaccountbook.databinding.FragmentListPaymentBinding
 import xyz.eraise.simpleaccountbook.pojo.Payment
 import xyz.eraise.simpleaccountbook.repository.PaymentRepository
@@ -75,12 +74,10 @@ class PaymentListFragment : Fragment() {
     }
 
     private fun initRecyclerView() {
-        mAdapter.setOnItemChildClickListener { _, view, position ->
-            run {
-                if (view.id == R.id.rbtn_default) setDefault(
-                    position
-                )
-            }
+        mAdapter.setOnItemChildClickListener { _, _, position ->
+            setDefault(
+                position
+            )
         }
         mAdapter.setOnItemClickListener { _, _, position ->
             selectItem(position)
@@ -95,10 +92,10 @@ class PaymentListFragment : Fragment() {
     private fun initData() {
         lifecycleScope.launch {
             PaymentRepository
-                .getPayments()
+                .getPaymentsAsync()
                 .await()
                 .let {
-                    mAdapter.addData(0, it)
+                    mAdapter.addData(it)
                 }
         }
     }
@@ -129,15 +126,16 @@ class PaymentListFragment : Fragment() {
 
         lifecycleScope.launch {
             PaymentRepository
-                .savePayment(default)
-                .await()
+                .savePaymentAsync(default)
+                .await().let {
+                    mAdapter.notifyItemChanged(position)
+                }
         }
 
-        mAdapter.notifyItemChanged(position)
     }
 
     private fun selectItem(position: Int) {
-        ViewModelProvider(this)[SelectPaymentViewModel::class.java]
+        ViewModelProvider(requireActivity())[SelectPaymentViewModel::class.java]
             .selected
             .postValue(mAdapter.data[position])
     }

@@ -20,6 +20,7 @@ class PaymentAdapter
 
     override fun convert(holder: BaseViewHolder, item: Payment) {
         holder.setText(R.id.tv_name, item.name)
+        holder.getView<RadioButton>(R.id.rbtn_default).isChecked = item.isDefault
         if (item.isDefault) {
             mDefaultPosition = holder.bindingAdapterPosition
         }

@@ -14,26 +14,26 @@ object CategoryRepository : DBProviderImpl() {
 
     private val emptyCategory = Category()
 
-    suspend fun saveCategory(category: Category): Deferred<Boolean> {
-        var c = category
+    suspend fun saveCategoryAsync(category: Category): Deferred<Boolean> {
+        val c = getDefaultCategoryAsync().await() ?: emptyCategory
         if (c.isDefault) {
-            c = getDefaultCategoryAsync().await() ?: emptyCategory
             if (c != emptyCategory) {
                 c.isDefault = false
             }
         }
         return database.beginTransactionAsync {
             c.save(it)
+            category.save(it)
         }.defer()
     }
 
-    fun getCategorys(): Deferred<MutableList<Category>> {
+    fun getCategorysAsync(): Deferred<MutableList<Category>> {
         return (select from Category::class where (Category_Table.is_delete.`is`(false))).async(
             database
         ) { d -> queryList(d) }.defer()
     }
 
-    fun getCategoryCount(): Deferred<Long> {
+    fun getCategoryCountAsync(): Deferred<Long> {
         return (select from Category::class
                 where (Category_Table.is_delete.`is`(false))).async(database) { d -> longValue(d) }
             .defer()

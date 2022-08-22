@@ -30,7 +30,7 @@ class AccountBookTest: InstrumentationTestCase() {
         company = AccountBook(name = "公司", isDefault = true)
         company.isDelete = true
         Observable.just(daily, journey, company)
-                .flatMapSingle {book -> AccountBookRepository.saveAccountBook(book) }
+                .flatMapSingle {book -> AccountBookRepository.saveAccountBookAsync(book) }
                 .subscribe()
     }
 
@@ -44,7 +44,7 @@ class AccountBookTest: InstrumentationTestCase() {
     @Test
     fun testSetDefaultAccountBook() {
         daily.isDefault = true
-        AccountBookRepository.saveAccountBook(daily)
+        AccountBookRepository.saveAccountBookAsync(daily)
                 .flatMapMaybe { AccountBookRepository.getDefaultAccountBookAsync()}
                 .subscribe({
                     println("set default account book is " + it.name)
@@ -58,11 +58,11 @@ class AccountBookTest: InstrumentationTestCase() {
     @Test
     fun testSetDefaultAccountBook2() {
         daily.isDefault = true
-        AccountBookRepository.saveAccountBook(daily)
+        AccountBookRepository.saveAccountBookAsync(daily)
                 .map { journey.isDefault = true }
-                .flatMap { AccountBookRepository.saveAccountBook(journey) }
+                .flatMap { AccountBookRepository.saveAccountBookAsync(journey) }
                 .map { daily.isDefault = true }
-                .flatMap { AccountBookRepository.saveAccountBook(daily) }
+                .flatMap { AccountBookRepository.saveAccountBookAsync(daily) }
                 .flatMapMaybe { AccountBookRepository.getDefaultAccountBookAsync()}
                 .subscribe({
                     println("set default account 2 book is " + it.name)

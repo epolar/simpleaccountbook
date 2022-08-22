@@ -14,20 +14,20 @@ object AccountBookRepository : DBProviderImpl() {
 
     private val emptyAccountBook = AccountBook()
 
-    suspend fun saveAccountBook(accountBook: AccountBook): Deferred<Boolean> {
-        var ab = accountBook
+    suspend fun saveAccountBookAsync(accountBook: AccountBook): Deferred<Boolean> {
+        val ab = getDefaultAccountBookAsync().await() ?: emptyAccountBook
         if (accountBook.isDefault) {
-            ab = getDefaultAccountBookAsync().await() ?: emptyAccountBook
             if (ab != emptyAccountBook) {
                 ab.isDefault = false
             }
         }
         return database.beginTransactionAsync {
             ab.save(it)
+            accountBook.save(it)
         }.defer()
     }
 
-    fun getAccountBooks(): Deferred<List<AccountBook>> {
+    fun getAccountBooksAsync(): Deferred<List<AccountBook>> {
         return (select from AccountBook::class where (AccountBook_Table.is_delete.`is`(false))).async(
             database
         ) { d ->
@@ -37,7 +37,7 @@ object AccountBookRepository : DBProviderImpl() {
         }.defer()
     }
 
-    fun getAccountBookCount(): Deferred<Long> {
+    fun getAccountBookCountAsync(): Deferred<Long> {
         return (select from AccountBook::class
                 where (AccountBook_Table.is_delete.`is`(false))
                 ).async(database) { d -> longValue(d) }.defer()
