@@ -120,6 +120,10 @@ class AddTallyFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
+        refreshThisMonth()
+    }
+
+    private fun refreshThisMonth() {
         lifecycleScope.launch {
             val now = Calendar.getInstance()
             TallyRepository.sumByMonthAsync(now[Calendar.YEAR], now[Calendar.MONTH])
@@ -450,6 +454,8 @@ class AddTallyFragment : Fragment() {
         binding.etProject.text.clear()
         mNumbers.clear()
         mOperations.clear()
+
+        refreshThisMonth()
     }
 
 }
